@@ -10,19 +10,24 @@ if (!(include "config.php")){
 
 Auth_check("Main_operation");
 
-
 function Auth_check ($success_callback){
 	$allheaders = getallheaders();
 	if (isset($allheaders['Authorization'])){
+
+		$header_authreq = $allheaders['Authorization'];
+
+		$ignore_len = strlen("Basic ");
 		
-		// find auth code
-		$Find_auth_result = strpos($allheaders['Authorization'], FtreeMakerCfg::$AUTH_CLIENT_STRING);
+		$code = substr($header_authreq, $ignore_len);
+
+		$h_code = hash("sha256", $code);
 		
-		if ($Find_auth_result > 0){
+		// find auth code		
+		if ($h_code === FtreeMakerCfg::$AUTH_CLIENT_STRING){
 			return call_user_func($success_callback);
 		}
 	}
-	$auth_header_string = "WWW-Authenticate: " . FtreeMakerCfg::$AUTH_SERV_HEADER;
+	$auth_header_string = "WWW-Authenticate: Basic realm=\"Private\"";
 	header($auth_header_string);
 }
 
@@ -35,11 +40,11 @@ function Main_operation(){
 }
 
 function Main_listing($text_only){
-	if (!is_dir(FtreeMakerCfg::$SEARCH_DIR)){
-		echo "Failed to find\"FtreeMakerCfg::\$SEARCH_DIR\" [ = \"" . FtreeMakerCfg::$SEARCH_DIR . "\" ]";
+	if (!is_dir(FtreeMakerCfg::$LIST_DIR)){
+		echo "Failed to find\"FtreeMakerCfg::\$LIST_DIR\" [ = \"" . FtreeMakerCfg::$LIST_DIR . "\" ]";
 		return;
 	}
-	$root_dir = FtreeMakerCfg::$SEARCH_DIR;
+	$root_dir = FtreeMakerCfg::$LIST_DIR;
 	$root_dir_len = strlen($root_dir);
 	$dlist = array($root_dir);
 
@@ -62,7 +67,7 @@ function Main_listing($text_only){
 		$dirs = $scan_result["dirs"];
 		$files = $scan_result["files"];
 
-		// Canonical directory name, aliasing $SEARCH_DIR as root ("/")
+		// Canonical directory name, aliasing $LIST_DIR as root ("/")
 		$directory_short = substr($directory, $root_dir_len);
 		if ($directory_short == ""){
 			$directory_short = "/";
