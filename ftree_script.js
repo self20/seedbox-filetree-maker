@@ -3,20 +3,6 @@ $(function() {
 		'core': {
 			'dblclick_toggle': false,
 			'data': window.tree_json,
-			// 'data': [
-			// 		'Simple root node', {
-			// 			'text': 'Root node 2',
-			// 			'state': {
-			// 				'opened': true,
-			// 				'selected': true
-			// 			},
-			// 			'children': [{
-			// 					'text': 'Child 1'
-			// 				},
-			// 				'Child 2'
-			// 			]
-			// 		}
-			// 	]
 		},
 		"checkbox": {
             "keep_selected_style": false
@@ -27,14 +13,9 @@ $(function() {
 		console.log(data.selected);
 	});
 
-	//example interaction
-	$('button').on('click', function() {
-		$('#dir_tree').jstree(true).select_node('child_node_1');
-		$('#dir_tree').jstree('select_node', 'child_node_1');
-		$.jstree.reference('#dir_tree').select_node('child_node_1');
-	});
 
 	// style tree box
+	
 	$(window).resize(function (){
 		resize_tree_container();
 	});

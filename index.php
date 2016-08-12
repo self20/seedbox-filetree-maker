@@ -22,7 +22,7 @@ function Auth_check ($success_callback){
 
 		$h_code = hash("sha256", $code);
 		
-		// find auth code		
+		// find auth code
 		if ($h_code === FtreeMakerCfg::$AUTH_CLIENT_STRING){
 			return call_user_func($success_callback);
 		}
@@ -103,6 +103,21 @@ function Main_listing($text_only){
 	}
 }
 
+function Render_main_text_only($tree){
+	header("Content-type: text/plain");
+	foreach($tree as $foldername => $value){
+		$files = $value["files"];
+		$folders = $value["dirs"];
+		echo "# $foldername\n";
+		foreach($files as $filename){
+			$fileUrl = make_file_url(path_join($foldername, $filename));
+			echo $fileUrl . "\n";
+		}
+	}
+}
+
+
+
 function convert_tree_to_treejs($tree){
 		//convert tree to treejs format
 	$jstree = array();
@@ -179,15 +194,12 @@ function make_file_url($fname){
 function path_join($p1, $p2){
 	$p1last = substr($p1, -1);
 	if ($p1last == "/" or $p1last == "\\"){
-		$p1 = substr($p1, 0 , strlen($p1) -2);
+		// subtract last chracter
+		$p1 = substr($p1, 0 , -1 );
 	}
-	$p2first = substr($p2, 0);
-	if ($p2first == "/" or $p2first == "\\"){
-		if (strlen($p2) > 1){
-			$p2 = substr($p2, 1, -1);
-		}else{
-			$p2 = "";
-		}
+	$p2first = (string)$p2[0];
+	if ($p2first == "/" or $p2first == "\\"){		
+		$p2 = substr($p2, 1);
 	}
 
 	return $p1 . '/' . $p2;
@@ -232,18 +244,6 @@ function full_url( $s, $use_forwarded_host = false )
 // #################### Render #########################################
 // #####################################################################
 
-function Render_main_text_only($tree){
-	header("Content-type: text/plain");
-	// print_r($tree);
-	foreach($tree as $foldername => $value){
-		$files = $value["files"];
-		$folders = $value["dirs"];
-		foreach($files as $filename){
-			$fileUrl = make_file_url(path_join($foldername, $file));
-			echo $fileUrl . "\n";
-		}
-	}
-}
 
 function Render_main($render_data){
 

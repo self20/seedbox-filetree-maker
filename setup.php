@@ -32,8 +32,8 @@ $ltmark$qmark
 	{
 		//Regarding Paths
 		// if \$LIST_DIR == "/xyz/foo", \$PREFIX_URL == "bar://foo",
-		// and  <REAL FILE PATH>   == "/xyz/foo/some_folder/some_file.abc"
-		// then <FINAL OUTPUT URL> == "bar://foo/some_folder/some_file.abc"
+		// and  (REAL FILE PATH)   == "/xyz/foo/some_folder/some_file.abc"
+		// then (FINAL OUTPUT URL) == "bar://foo/some_folder/some_file.abc"
 
 
 		//Directory To Start From ( NO TRAILING SLASH! )
