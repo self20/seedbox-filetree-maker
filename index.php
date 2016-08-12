@@ -10,6 +10,7 @@ if (!(include "config.php")){
 
 Auth_check("Main_operation");
 
+
 function Auth_check ($success_callback){
 	$allheaders = getallheaders();
 	if (isset($allheaders['Authorization'])){
@@ -31,6 +32,7 @@ function Auth_check ($success_callback){
 	header($auth_header_string);
 }
 
+
 function Main_operation(){
 	if(array_key_exists('raw', $_REQUEST)){
 		return Main_listing(true);
@@ -38,6 +40,7 @@ function Main_operation(){
 		return Main_listing(false);
 	}
 }
+
 
 function Main_listing($text_only){
 	if (!is_dir(FtreeMakerCfg::$LIST_DIR)){
@@ -103,20 +106,6 @@ function Main_listing($text_only){
 	}
 }
 
-function Render_main_text_only($tree){
-	header("Content-type: text/plain");
-	foreach($tree as $foldername => $value){
-		$files = $value["files"];
-		$folders = $value["dirs"];
-		echo "# $foldername\n";
-		foreach($files as $filename){
-			$fileUrl = make_file_url(path_join($foldername, $filename));
-			echo $fileUrl . "\n";
-		}
-	}
-}
-
-
 
 function convert_tree_to_treejs($tree){
 		//convert tree to treejs format
@@ -152,7 +141,7 @@ function convert_tree_to_treejs($tree){
 						"text" => $file,
 						"parent" => $dirname,
 						"icon" => "jstree-file", 
-						"a_attr" => make_file_url($dirname.$file),
+						// "a_attr" => make_file_url($dirname.$file),
 						);
 			array_push($file_entries, $nfile);
 		}
@@ -239,10 +228,23 @@ function full_url( $s, $use_forwarded_host = false )
 }
 
 
-
 // #####################################################################
 // #################### Render #########################################
 // #####################################################################
+
+
+function Render_main_text_only($tree){
+	header("Content-type: text/plain");
+	foreach($tree as $foldername => $value){
+		$files = $value["files"];
+		$folders = $value["dirs"];
+		echo "# $foldername\n";
+		foreach($files as $filename){
+			$fileUrl = make_file_url(path_join($foldername, $filename));
+			echo $fileUrl . "\n";
+		}
+	}
+}
 
 
 function Render_main($render_data){
@@ -264,12 +266,20 @@ function Render_main($render_data){
 	<ul>
  		<li> File Tree </li>
  		<li><a href="<? echo "$absolute_url?raw"; ?>"> Plain Text Vesion </a></li>
+ 		<li><button id="show_content">Get Selected</button></li>
 	</ul>
 </div>
   <div id="treemain">
   	<div id="dir_tree">
 
 	</div>
+  </div>
+  <div id="output_text" style="display:none">
+  <div>
+  	<button id="hide_output">#</button>
+  </div>
+  	<pre>
+  	</pre>
   </div>
 
 <?	if (isset($render_data[text_dump])): ?>
@@ -293,13 +303,13 @@ function Render_main($render_data){
 <?	endif; ?>
 
 <script>
-window.tree_json = <?
+window.ftreemaker_tree_json = <?
 	if (isset($render_data[json])):
 		echo $render_data[json];
 	endif;
 ?>;
 
-window.url_prefix = "<?
+window.ftreemaker_url_prefix = "<?
 	if (isset($render_data[url_prefix])):
 		echo $render_data[url_prefix];
 	endif;
